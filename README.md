@@ -1,3 +1,9 @@
+---
+services: data-lake-analytics
+platforms: python
+author: saveenr
+---
+
 # U-SQL/Python Hello World
 
 ```
