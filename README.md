@@ -1,57 +1,36 @@
-# Project Name
+# U-SQL/Python Hello World
 
-(short, 1-3 sentenced, description of the project)
+```
+REFERENCE ASSEMBLY [ExtPython];
 
-## Features
+DECLARE @myScript = @"
+def get_mentions(tweet):
+    return ';'.join( ( w[1:] for w in tweet.split() if w[0]=='@' ) )
 
-This project framework provides the following features:
+def usqlml_main(df):
+    del df['time']
+    del df['author']
+    df['mentions'] = df.tweet.apply(get_mentions)
+    del df['tweet']
+    return df
+";
 
-* Feature 1
-* Feature 2
-* ...
+@t  = 
+    SELECT * FROM 
+        (VALUES
+            ("D1","T1","A1","@foo Hello World @bar"),
+            ("D2","T2","A2","@baz Hello World @beer")
+        ) AS 
+              D( date, time, author, tweet );
 
-## Getting Started
-
-### Prerequisites
-
-(ideally very short, if any)
-
-- OS
-- Library version
-- ...
-
-### Installation
-
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
-
-### Quickstart
-(Add steps to get up and running quickly)
-
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
+@m  =
+    REDUCE @t ON date
+    PRODUCE date string, mentions string
+    USING new Extension.Python.Reducer(pyScript:@myScript);
 
 
-## Demo
+OUTPUT @m
+  TO "/tweetmentions.csv"
+  USING Outputters.Csv();
+```
 
-A demo app is included to show how to use the project.
-
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
-
-## Resources
-
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
