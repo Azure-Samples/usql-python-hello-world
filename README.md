@@ -6,6 +6,40 @@ author: saveenr
 
 # U-SQL/Python Hello World
 
+## Case 1: no transformation of partitions
+
+```
+REFERENCE ASSEMBLY [ExtPython];
+
+DECLARE @myScript = @"
+
+def usqlml_main(df):
+    return df
+";
+
+@t  = 
+    SELECT * FROM 
+        (VALUES
+            ("key1",100),
+            ("key1",101),
+            ("key2",200),
+            ("key3",202)
+        ) AS 
+              D( partitionkey, value );
+
+@m  =
+    REDUCE @t ON partitionkey
+    PRODUCE partitionkey string, value string
+    USING new Extension.Python.Reducer(pyScript:@myScript);
+
+
+OUTPUT @m
+  TO "/output.csv"
+  USING Outputters.Csv();
+```
+
+## Case 2: Transforming the partitions
+
 ```
 REFERENCE ASSEMBLY [ExtPython];
 
