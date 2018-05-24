@@ -4,7 +4,7 @@ platforms: python
 author: saveenr
 ---
 
-# U-SQL/Python Hello World
+# U-SQL: Python Hello World
 
 ## Case 1: no transformation of partitions
 
